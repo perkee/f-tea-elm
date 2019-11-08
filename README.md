@@ -4,7 +4,7 @@ a repo for my friday tech lounge talk about the elm architecture
 you should be able to get this going with
 
 ```
-git checkout https://github.com/perkee/f-tea-elm.git
+git clone https://github.com/perkee/f-tea-elm.git
 cd f-tea-elm
 yarn install
 yarn dev
