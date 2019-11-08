@@ -94,105 +94,21 @@ view : Model -> H.Html Msg
 view model =
     H.main_ []
         [ H.h1 [] [ H.text "Counting!" ]
-
-        -- Title
-        , H.input
-            [ HA.type_ "text"
-            , HA.value model.firstPlayerName
-            , HE.onInput <| UserChangedFirstPlayerName
-            , HA.css
-                [ Css.fontSize <|
-                    Css.em 2
-                , Css.display
-                    Css.block
-                ]
-            ]
-            []
-
-        -- Decrement Button
-        , H.button
-            [ HE.onClick UserClickedDecrementButton
-            , HA.disabled <| model.firstHitPoints == hitPointsEnd
-            , HA.css
-                [ Css.fontSize <| Css.em 4
-                , Css.display Css.inlineBlock
-                , Css.marginRight <| Css.em 0.33
-                ]
-            ]
-            [ H.text "-1" ]
-
-        -- Display
-        , H.div
-            [ HA.css
-                [ Css.fontSize <| Css.em 4
-                , Css.display Css.inlineBlock
-                , Css.marginRight <| Css.em 0.33
-                ]
-            ]
-            [ H.text <| String.fromInt model.firstHitPoints ]
-
-        -- Increment Button
-        , H.button
-            [ HE.onClick UserClickedIncrementButton
-            , HA.disabled <| model.firstHitPoints == hitPointsInit
-            , HA.css
-                [ Css.fontSize <| Css.em 4
-                , Css.display Css.inlineBlock
-                , Css.marginRight <| Css.em 0.33
-                ]
-            ]
-            [ H.text "+1" ]
+        , viewContestant
+            model.firstPlayerName
+            model.firstHitPoints
+            UserChangedFirstPlayerName
+            UserClickedIncrementButton
+            UserClickedDecrementButton
 
         -- Line!
         , H.hr [] []
-
-        -- Title
-        , H.input
-            [ HA.type_ "text"
-            , HA.value model.otherPlayerName
-            , HE.onInput <| UserChangedOtherPlayerName
-            , HA.css
-                [ Css.fontSize <|
-                    Css.em 2
-                , Css.display
-                    Css.block
-                ]
-            ]
-            []
-
-        -- Decrement Button
-        , H.button
-            [ HE.onClick UserClickedOtherDecrementButton
-            , HA.disabled <| model.otherHitPoints == hitPointsEnd
-            , HA.css
-                [ Css.fontSize <| Css.em 4
-                , Css.display Css.inlineBlock
-                , Css.marginRight <| Css.em 0.33
-                ]
-            ]
-            [ H.text "-1" ]
-
-        -- Display
-        , H.div
-            [ HA.css
-                [ Css.fontSize <| Css.em 4
-                , Css.display Css.inlineBlock
-                , Css.marginRight <| Css.em 0.33
-                ]
-            ]
-            [ H.text <| String.fromInt model.otherHitPoints ]
-
-        -- Increment Button
-        , H.button
-            [ HE.onClick UserClickedOtherIncrementButton
-            , HA.disabled <| model.otherHitPoints == hitPointsInit
-            , HA.css
-                [ Css.fontSize <| Css.em 4
-                , Css.display Css.inlineBlock
-                , Css.marginRight <| Css.em 0.33
-                ]
-            ]
-            [ H.text "+1" ]
+        , viewContestant
+            model.otherPlayerName
+            model.otherHitPoints
+            UserChangedOtherPlayerName
+            UserClickedOtherIncrementButton
+            UserClickedOtherDecrementButton
 
         -- Line!
         , H.hr [] []
@@ -209,4 +125,57 @@ view model =
             |> H.text
             |> List.singleton
             |> H.div []
+        ]
+
+
+viewContestant : String -> Int -> (String -> msg) -> msg -> msg -> H.Html msg
+viewContestant name hitPoints nameMsg incMsg decMsg =
+    H.div []
+        [ -- Title
+          H.input
+            [ HA.type_ "text"
+            , HA.value name
+            , HE.onInput <| nameMsg
+            , HA.css
+                [ Css.fontSize <|
+                    Css.em 2
+                , Css.display
+                    Css.block
+                ]
+            ]
+            []
+
+        -- Decrement Button
+        , H.button
+            [ HE.onClick decMsg
+            , HA.disabled <| hitPoints == hitPointsEnd
+            , HA.css
+                [ Css.fontSize <| Css.em 4
+                , Css.display Css.inlineBlock
+                , Css.marginRight <| Css.em 0.33
+                ]
+            ]
+            [ H.text "-1" ]
+
+        -- Display
+        , H.div
+            [ HA.css
+                [ Css.fontSize <| Css.em 4
+                , Css.display Css.inlineBlock
+                , Css.marginRight <| Css.em 0.33
+                ]
+            ]
+            [ H.text <| String.fromInt hitPoints ]
+
+        -- Increment Button
+        , H.button
+            [ HE.onClick incMsg
+            , HA.disabled <| hitPoints == hitPointsInit
+            , HA.css
+                [ Css.fontSize <| Css.em 4
+                , Css.display Css.inlineBlock
+                , Css.marginRight <| Css.em 0.33
+                ]
+            ]
+            [ H.text "+1" ]
         ]
