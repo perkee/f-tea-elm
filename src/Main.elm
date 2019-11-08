@@ -27,115 +27,120 @@ main =
 
 
 type alias Model =
-    { firstHitPoints : Int
-    , otherHitPoints : Int
-    , firstPlayerName : String
-    , otherPlayerName : String
+    { firstContestant : ContestantState
+    , otherContestant : ContestantState
+    }
+
+
+type alias ContestantState =
+    { hitPoints : Int
+    , name : String
+    }
+
+
+initContestantState : ContestantState
+initContestantState =
+    { hitPoints = hitPointsInit
+    , name = "Some guy"
     }
 
 
 init : Model
 init =
-    { firstHitPoints = hitPointsInit
-    , otherHitPoints = hitPointsInit
-    , firstPlayerName = "The good guy"
-    , otherPlayerName = "The bad guy"
+    { firstContestant = initContestantState
+    , otherContestant = initContestantState
     }
 
 
 type Msg
-    = UserClickedDecrementButton
-    | UserClickedIncrementButton
-    | UserClickedOtherDecrementButton
-    | UserClickedOtherIncrementButton
-    | UserChangedFirstPlayerName String
-    | UserChangedOtherPlayerName String
+    = UserUpdatedFirstContestant ContestantState
+    | UserUpdatedOtherContestant ContestantState
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        UserClickedDecrementButton ->
-            if model.firstHitPoints <= hitPointsEnd then
-                { model | firstHitPoints = hitPointsEnd }
+        UserUpdatedFirstContestant s ->
+            { model | firstContestant = s }
 
-            else
-                { model | firstHitPoints = model.firstHitPoints - 1 }
-
-        UserClickedIncrementButton ->
-            if model.firstHitPoints >= hitPointsInit then
-                { model | firstHitPoints = hitPointsInit }
-
-            else
-                { model | firstHitPoints = model.firstHitPoints + 1 }
-
-        UserClickedOtherDecrementButton ->
-            if model.otherHitPoints <= hitPointsEnd then
-                { model | otherHitPoints = hitPointsEnd }
-
-            else
-                { model | otherHitPoints = model.otherHitPoints - 1 }
-
-        UserClickedOtherIncrementButton ->
-            if model.otherHitPoints >= hitPointsInit then
-                { model | otherHitPoints = hitPointsInit }
-
-            else
-                { model | otherHitPoints = model.otherHitPoints + 1 }
-
-        UserChangedFirstPlayerName name ->
-            { model | firstPlayerName = name }
-
-        UserChangedOtherPlayerName name ->
-            { model | otherPlayerName = name }
+        UserUpdatedOtherContestant s ->
+            { model | otherContestant = s }
 
 
 view : Model -> H.Html Msg
 view model =
     H.main_ []
         [ H.h1 [] [ H.text "Counting!" ]
+
+        -- first guy
         , viewContestant
-            model.firstPlayerName
-            model.firstHitPoints
-            UserChangedFirstPlayerName
-            UserClickedIncrementButton
-            UserClickedDecrementButton
+            model.firstContestant
+            UserUpdatedFirstContestant
 
         -- Line!
         , H.hr [] []
+
+        -- other guy
         , viewContestant
-            model.otherPlayerName
-            model.otherHitPoints
-            UserChangedOtherPlayerName
-            UserClickedOtherIncrementButton
-            UserClickedOtherDecrementButton
+            model.otherContestant
+            UserUpdatedOtherContestant
 
         -- Line!
         , H.hr [] []
-        , (case compare model.firstHitPoints model.otherHitPoints of
-            EQ ->
-                model.firstPlayerName ++ " and " ++ model.otherPlayerName ++ " are tied."
-
-            GT ->
-                model.firstPlayerName ++ " is beating " ++ model.otherPlayerName ++ "."
-
-            LT ->
-                model.otherPlayerName ++ " is beating " ++ model.firstPlayerName ++ "."
-          )
-            |> H.text
-            |> List.singleton
-            |> H.div []
+        , viewMatchup
+            model.firstContestant
+            model.otherContestant
         ]
 
 
-viewContestant : String -> Int -> (String -> msg) -> msg -> msg -> H.Html msg
-viewContestant name hitPoints nameMsg incMsg decMsg =
+viewMatchup : ContestantState -> ContestantState -> H.Html msg
+viewMatchup a b =
+    (case compare a.hitPoints b.hitPoints of
+        EQ ->
+            a.name ++ " and " ++ b.name ++ " are tied."
+
+        GT ->
+            a.name ++ " is beating " ++ b.name ++ "."
+
+        LT ->
+            b.name ++ " is beating " ++ a.name ++ "."
+    )
+        |> H.text
+        |> List.singleton
+        |> H.div []
+
+
+updateContestantName : ContestantState -> String -> ContestantState
+updateContestantName state name =
+    { state | name = name }
+
+
+decrementHitPoints : ContestantState -> ContestantState
+decrementHitPoints state =
+    if state.hitPoints <= hitPointsEnd then
+        { state | hitPoints = hitPointsEnd }
+
+    else
+        { state | hitPoints = state.hitPoints - 1 }
+
+
+incrementHitPoints : ContestantState -> ContestantState
+incrementHitPoints state =
+    if state.hitPoints >= hitPointsInit then
+        { state | hitPoints = hitPointsInit }
+
+    else
+        { state | hitPoints = state.hitPoints + 1 }
+
+
+viewContestant : ContestantState -> (ContestantState -> msg) -> H.Html msg
+viewContestant state updateMsg =
     H.div []
         [ -- Title
           H.input
             [ HA.type_ "text"
-            , HA.value name
-            , HE.onInput <| nameMsg
+            , HA.value state.name
+            , HE.onInput (updateContestantName state >> updateMsg)
             , HA.css
                 [ Css.fontSize <|
                     Css.em 2
@@ -147,8 +152,8 @@ viewContestant name hitPoints nameMsg incMsg decMsg =
 
         -- Decrement Button
         , H.button
-            [ HE.onClick decMsg
-            , HA.disabled <| hitPoints == hitPointsEnd
+            [ HE.onClick (decrementHitPoints state |> updateMsg)
+            , HA.disabled <| state.hitPoints == hitPointsEnd
             , HA.css
                 [ Css.fontSize <| Css.em 4
                 , Css.display Css.inlineBlock
@@ -165,12 +170,14 @@ viewContestant name hitPoints nameMsg incMsg decMsg =
                 , Css.marginRight <| Css.em 0.33
                 ]
             ]
-            [ H.text <| String.fromInt hitPoints ]
+            [ H.text <| String.fromInt state.hitPoints ]
 
         -- Increment Button
         , H.button
-            [ HE.onClick incMsg
-            , HA.disabled <| hitPoints == hitPointsInit
+            [ incrementHitPoints state
+                |> updateMsg
+                |> HE.onClick
+            , HA.disabled <| state.hitPoints == hitPointsInit
             , HA.css
                 [ Css.fontSize <| Css.em 4
                 , Css.display Css.inlineBlock
