@@ -1,29 +1,44 @@
 module Main exposing (main)
 
 import Browser
+import Css
 import Html.Styled as H
+import Html.Styled.Attributes as HA
+import Html.Styled.Events as HE
 
 
-main : Program () Model msg
+main : Program () Model Msg
 main =
     Browser.sandbox
-        { init = "Hello, Friday Tech Lounge!"
+        { init = 10
         , update = update
         , view = view >> H.toUnstyled
         }
 
 
 type alias Model =
-    String
+    Int
 
 
-update : msg -> Model -> Model
-update _ model =
-    model
+type Msg
+    = Decrement
 
 
-view : Model -> H.Html msg
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Decrement ->
+            model - 1
+
+
+view : Model -> H.Html Msg
 view model =
-    H.h1
-        []
-        [ H.text model ]
+    H.main_ []
+        [ H.h1
+            []
+            [ H.text "Hello, Friday Tech Lounge!" ]
+        , H.text <| String.fromInt model
+        , H.button
+            [ HE.onClick Decrement ]
+            [ H.text "-1" ]
+        ]
