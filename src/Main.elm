@@ -41,4 +41,21 @@ view model =
         , H.button
             [ HE.onClick Decrement ]
             [ H.text "-1" ]
+        , H.div
+            [ HA.css
+                [ Css.fontSize <| Css.em 4
+                , Css.display Css.inlineBlock
+                , Css.marginRight <| Css.em 0.33
+                ]
+            ]
+            [ H.text <| String.fromInt model ]
+        , H.button
+            [ HE.onClick Decrement
+            , HA.css
+                [ Css.fontSize <| Css.em 4
+                , Css.display Css.inlineBlock
+                , Css.marginRight <| Css.em 0.33
+                ]
+            ]
+            [ H.text "-1" ]
         ]
