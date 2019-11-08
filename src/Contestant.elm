@@ -1,6 +1,10 @@
 module Contestant exposing
     ( State
+    , config
     , init
+    , setMaxHP
+    , setMinHP
+    , setName
     , view
     , viewMatchup
     )
@@ -24,14 +28,46 @@ hitPointsEnd =
 type alias State =
     { hitPoints : Int
     , name : String
+    , config : Config
     }
 
 
-init : State
-init =
-    { hitPoints = hitPointsInit
+init : Config -> State
+init c =
+    { hitPoints = c.maxHP
+    , name = c.name
+    , config = c
+    }
+
+
+type alias Config =
+    { maxHP : Int
+    , minHP : Int
+    , name : String
+    }
+
+
+config : Config
+config =
+    { maxHP = hitPointsInit
+    , minHP = hitPointsEnd
     , name = "Some guy"
     }
+
+
+setMaxHP : Int -> Config -> Config
+setMaxHP hp c =
+    { c | maxHP = hp }
+
+
+setMinHP : Int -> Config -> Config
+setMinHP hp c =
+    { c | minHP = hp }
+
+
+setName : String -> Config -> Config
+setName n c =
+    { c | name = n }
 
 
 viewMatchup : State -> State -> H.Html msg
@@ -58,8 +94,8 @@ updateContestantName state name =
 
 decrementHitPoints : State -> State
 decrementHitPoints state =
-    if state.hitPoints <= hitPointsEnd then
-        { state | hitPoints = hitPointsEnd }
+    if state.hitPoints <= state.config.minHP then
+        { state | hitPoints = state.config.minHP }
 
     else
         { state | hitPoints = state.hitPoints - 1 }
@@ -67,8 +103,8 @@ decrementHitPoints state =
 
 incrementHitPoints : State -> State
 incrementHitPoints state =
-    if state.hitPoints >= hitPointsInit then
-        { state | hitPoints = hitPointsInit }
+    if state.hitPoints >= state.config.maxHP then
+        { state | hitPoints = state.config.maxHP }
 
     else
         { state | hitPoints = state.hitPoints + 1 }
@@ -94,7 +130,7 @@ view state updateMsg =
         -- Decrement Button
         , H.button
             [ HE.onClick (decrementHitPoints state |> updateMsg)
-            , HA.disabled <| state.hitPoints == hitPointsEnd
+            , HA.disabled <| state.hitPoints == state.config.minHP
             , HA.css
                 [ Css.fontSize <| Css.em 4
                 , Css.display Css.inlineBlock
@@ -118,7 +154,7 @@ view state updateMsg =
             [ incrementHitPoints state
                 |> updateMsg
                 |> HE.onClick
-            , HA.disabled <| state.hitPoints == hitPointsInit
+            , HA.disabled <| state.hitPoints == state.config.maxHP
             , HA.css
                 [ Css.fontSize <| Css.em 4
                 , Css.display Css.inlineBlock

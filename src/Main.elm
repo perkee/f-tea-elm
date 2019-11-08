@@ -25,8 +25,14 @@ type alias Model =
 
 init : Model
 init =
-    { firstContestant = Contestant.init
-    , otherContestant = Contestant.init
+    { firstContestant = Contestant.config |> Contestant.init
+    , otherContestant =
+        Contestant.config
+            |> Contestant.setName "the other guy"
+            |> Contestant.setMaxHP 20
+            |> Contestant.setMinHP 2
+            |> Debug.log "other config"
+            |> Contestant.init
     }
 
 
