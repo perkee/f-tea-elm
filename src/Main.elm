@@ -28,7 +28,11 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Decrement ->
-            model - 1
+            if model <= 0 then
+                0
+
+            else
+                model - 1
 
 
 view : Model -> H.Html Msg
@@ -37,10 +41,6 @@ view model =
         [ H.h1
             []
             [ H.text "Hello, Friday Tech Lounge!" ]
-        , H.text <| String.fromInt model
-        , H.button
-            [ HE.onClick Decrement ]
-            [ H.text "-1" ]
         , H.div
             [ HA.css
                 [ Css.fontSize <| Css.em 4
