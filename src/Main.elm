@@ -29,6 +29,8 @@ main =
 type alias Model =
     { firstHitPoints : Int
     , otherHitPoints : Int
+    , firstPlayerName : String
+    , otherPlayerName : String
     }
 
 
@@ -36,6 +38,8 @@ init : Model
 init =
     { firstHitPoints = hitPointsInit
     , otherHitPoints = hitPointsInit
+    , firstPlayerName = "The good guy"
+    , otherPlayerName = "The bad guy"
     }
 
 
@@ -44,6 +48,8 @@ type Msg
     | UserClickedIncrementButton
     | UserClickedOtherDecrementButton
     | UserClickedOtherIncrementButton
+    | UserChangedFirstPlayerName String
+    | UserChangedOtherPlayerName String
 
 
 update : Msg -> Model -> Model
@@ -77,13 +83,31 @@ update msg model =
             else
                 { model | otherHitPoints = model.otherHitPoints + 1 }
 
+        UserChangedFirstPlayerName name ->
+            { model | firstPlayerName = name }
+
+        UserChangedOtherPlayerName name ->
+            { model | otherPlayerName = name }
+
 
 view : Model -> H.Html Msg
 view model =
     H.main_ []
-        [ H.h1
+        [ H.h1 [] [ H.text "Counting!" ]
+
+        -- Title
+        , H.input
+            [ HA.type_ "text"
+            , HA.value model.firstPlayerName
+            , HE.onInput <| UserChangedFirstPlayerName
+            , HA.css
+                [ Css.fontSize <|
+                    Css.em 2
+                , Css.display
+                    Css.block
+                ]
+            ]
             []
-            [ H.text "Hello, Friday Tech Lounge!" ]
 
         -- Decrement Button
         , H.button
@@ -122,6 +146,20 @@ view model =
         -- Line!
         , H.hr [] []
 
+        -- Title
+        , H.input
+            [ HA.type_ "text"
+            , HA.value model.otherPlayerName
+            , HE.onInput <| UserChangedOtherPlayerName
+            , HA.css
+                [ Css.fontSize <|
+                    Css.em 2
+                , Css.display
+                    Css.block
+                ]
+            ]
+            []
+
         -- Decrement Button
         , H.button
             [ HE.onClick UserClickedOtherDecrementButton
@@ -155,4 +193,20 @@ view model =
                 ]
             ]
             [ H.text "+1" ]
+
+        -- Line!
+        , H.hr [] []
+        , (case compare model.firstHitPoints model.otherHitPoints of
+            EQ ->
+                model.firstPlayerName ++ " and " ++ model.otherPlayerName ++ " are tied."
+
+            GT ->
+                model.firstPlayerName ++ " is beating " ++ model.otherPlayerName ++ "."
+
+            LT ->
+                model.otherPlayerName ++ " is beating " ++ model.firstPlayerName ++ "."
+          )
+            |> H.text
+            |> List.singleton
+            |> H.div []
         ]
