@@ -1,7 +1,10 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (h1, text)
+import Html.Styled as H
 
 main =
-  h1 [] [ text "Hello, Friday Tech Lounge!" ]
+  H.h1
+    []
+    [ H.text "Hello, Friday Tech Lounge!" ]
+  |> H.toUnstyled
