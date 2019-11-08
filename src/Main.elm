@@ -45,6 +45,13 @@ update msg model =
             else
                 model - 1
 
+        Increment ->
+            if model >= hitPointsInit then
+                hitPointsInit
+
+            else
+                model + 1
+
 
 view : Model -> H.Html Msg
 view model =
