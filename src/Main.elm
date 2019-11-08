@@ -31,21 +31,21 @@ type alias Model =
 
 
 type Msg
-    = Decrement
-    | Increment
+    = UserClickedDecrementButton
+    | UserClickedIncrementButton
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Decrement ->
+        UserClickedDecrementButton ->
             if model <= hitPointsEnd then
                 hitPointsEnd
 
             else
                 model - 1
 
-        Increment ->
+        UserClickedIncrementButton ->
             if model >= hitPointsInit then
                 hitPointsInit
 
@@ -62,7 +62,7 @@ view model =
 
         -- Decrement Button
         , H.button
-            [ HE.onClick Decrement
+            [ HE.onClick UserClickedDecrementButton
             , HA.css
                 [ Css.fontSize <| Css.em 4
                 , Css.display Css.inlineBlock
@@ -83,7 +83,7 @@ view model =
 
         -- Increment Button
         , H.button
-            [ HE.onClick Increment
+            [ HE.onClick UserClickedIncrementButton
             , HA.css
                 [ Css.fontSize <| Css.em 4
                 , Css.display Css.inlineBlock
