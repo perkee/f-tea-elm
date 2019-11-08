@@ -7,10 +7,20 @@ import Html.Styled.Attributes as HA
 import Html.Styled.Events as HE
 
 
+hitPointsInit : Int
+hitPointsInit =
+    10
+
+
+hitPointsEnd : Int
+hitPointsEnd =
+    0
+
+
 main : Program () Model Msg
 main =
     Browser.sandbox
-        { init = 10
+        { init = hitPointsInit
         , update = update
         , view = view >> H.toUnstyled
         }
@@ -29,8 +39,8 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Decrement ->
-            if model <= 0 then
-                0
+            if model <= hitPointsEnd then
+                hitPointsEnd
 
             else
                 model - 1
@@ -42,6 +52,8 @@ view model =
         [ H.h1
             []
             [ H.text "Hello, Friday Tech Lounge!" ]
+
+        -- Decrement Button
         , H.button
             [ HE.onClick Decrement
             , HA.css
@@ -51,6 +63,8 @@ view model =
                 ]
             ]
             [ H.text "-1" ]
+
+        -- Display
         , H.div
             [ HA.css
                 [ Css.fontSize <| Css.em 4
@@ -59,6 +73,8 @@ view model =
                 ]
             ]
             [ H.text <| String.fromInt model ]
+
+        -- Increment Button
         , H.button
             [ HE.onClick Increment
             , HA.css
