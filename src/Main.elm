@@ -22,6 +22,7 @@ type alias Model =
 
 type Msg
     = Decrement
+    | Increment
 
 
 update : Msg -> Model -> Model
@@ -41,14 +42,6 @@ view model =
         [ H.h1
             []
             [ H.text "Hello, Friday Tech Lounge!" ]
-        , H.div
-            [ HA.css
-                [ Css.fontSize <| Css.em 4
-                , Css.display Css.inlineBlock
-                , Css.marginRight <| Css.em 0.33
-                ]
-            ]
-            [ H.text <| String.fromInt model ]
         , H.button
             [ HE.onClick Decrement
             , HA.css
@@ -58,4 +51,21 @@ view model =
                 ]
             ]
             [ H.text "-1" ]
+        , H.div
+            [ HA.css
+                [ Css.fontSize <| Css.em 4
+                , Css.display Css.inlineBlock
+                , Css.marginRight <| Css.em 0.33
+                ]
+            ]
+            [ H.text <| String.fromInt model ]
+        , H.button
+            [ HE.onClick Increment
+            , HA.css
+                [ Css.fontSize <| Css.em 4
+                , Css.display Css.inlineBlock
+                , Css.marginRight <| Css.em 0.33
+                ]
+            ]
+            [ H.text "+1" ]
         ]
